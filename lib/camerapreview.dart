@@ -356,6 +356,18 @@ class CameraAwesomeState extends State<CameraAwesome>
     });
   }
 
+  _calcPreviewSize (Size photoSize) {
+    Size size = photoSize;
+
+    if (photoSize.height > 1080) {
+      final aspectRatio = photoSize.aspectRatio;
+
+      size = Size(1080 * aspectRatio, 1080);
+    }
+
+    return size;
+  }
+
   _initPhotoSize() {
     if (widget.photoSize == null) {
       return;
@@ -365,9 +377,11 @@ class CameraAwesomeState extends State<CameraAwesome>
         return;
       }
       selectedAndroidPhotoSize.value = widget.photoSize.value;
-      await CamerawesomePlugin.setPreviewSize(
-          widget.photoSize.value.width.toInt(),
-          widget.photoSize.value.height.toInt());
+
+      Size previewSize = _calcPreviewSize(widget.photoSize.value);
+
+      await CamerawesomePlugin.setPreviewSize(previewSize.width.toInt(), previewSize.height.toInt());
+
       var effectivPreviewSize =
           await CamerawesomePlugin.getEffectivPreviewSize();
       if (selectedPreviewSize != null) {
